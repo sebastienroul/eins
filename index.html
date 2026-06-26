@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rechenrhythmus — Multiplications en allemand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1b1840; --bg-2:#262252; --bg-3:#312c63;
+    --ink:#F5F3FF; --muted:#A7A1D6; --line:rgba(255,255,255,.10);
+    --coral:#FF7A5C; --amber:#FFC24B; --mint:#46E0A8; --violet:#9b8cff;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --rounded: ui-rounded, "SF Pro Rounded", system-ui;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #2a2566 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #3a2a5e 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"Nunito", var(--rounded), system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100%; display:flex; flex-direction:column;
+  }
+  .wrap{
+    width:100%; max-width:680px; margin:0 auto;
+    padding:clamp(18px,4vw,40px); flex:1;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .brand .logo{font-size:34px}
+  .brand h1{font-family:"Fredoka",var(--rounded),sans-serif;font-weight:700;font-size:clamp(26px,5.5vw,38px);margin:0;letter-spacing:.3px}
+  .tagline{color:var(--muted);font-size:15px;margin:0 0 22px;max-width:48ch}
+
+  .card{
+    background:linear-gradient(180deg,var(--bg-2),#242050);
+    border:1px solid var(--line);border-radius:22px;
+    padding:clamp(16px,3.5vw,26px);box-shadow:var(--shadow);
+  }
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
+  @media (max-width:520px){.grid{grid-template-columns:1fr}}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.2px}
+  .field .hint{font-size:12px;color:var(--muted);opacity:.8;font-weight:600}
+  input[type=number], select{
+    width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    font:inherit;font-weight:700;padding:11px 13px;border-radius:12px;
+  }
+  input[type=number]:focus, select:focus, button:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-color:transparent}
+  .range-row{display:flex;align-items:center;gap:10px}
+  .range-row input[type=range]{flex:1;accent-color:var(--coral)}
+  .range-row .val{font-family:"Fredoka",var(--rounded);font-weight:600;min-width:48px;text-align:right}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+  .toggle span{font-size:14px;font-weight:700}
+  .toggle.disabled{opacity:.45}
+  .switch{position:relative;width:48px;height:28px;flex:0 0 auto}
+  .switch input{opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .switch .slot{position:absolute;inset:0;background:#3b366f;border-radius:999px;transition:.18s}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:.18s}
+  .switch input:checked + .slot{background:var(--mint)}
+  .switch input:checked + .slot + .knob{transform:translateX(20px)}
+
+  .voicebar{display:flex;gap:10px;align-items:flex-end;margin-top:18px}
+  .voicebar .field{flex:1}
+  .warn{margin-top:14px;padding:11px 14px;border-radius:12px;background:rgba(255,122,92,.12);border:1px solid rgba(255,122,92,.4);color:#ffd2c6;font-size:13.5px;font-weight:600;display:none}
+  .note{margin-top:10px;color:var(--muted);font-size:12.5px;font-weight:600}
+
+  .btn{font-family:"Fredoka",var(--rounded);font-weight:600;font-size:16px;border:none;border-radius:14px;padding:13px 20px;cursor:pointer;color:#1b1840;background:#fff;transition:transform .08s ease, filter .15s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.primary{background:linear-gradient(180deg,var(--amber),var(--coral));color:#2a1208;font-size:20px;padding:17px 24px}
+  .btn.danger{background:linear-gradient(180deg,#ff8f7a,#ef5350);color:#3a0d08}
+  .btn.big{width:100%;margin-top:20px}
+  .btn:hover{filter:brightness(1.05)}
+
+  /* ---------- jeu ---------- */
+  .play{display:none}
+  #play{flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .pane{width:49%;display:flex;flex-direction:column}
+  .pane:nth-of-type(2){justify-content:center;align-items:center;align-self:center}
+  .pane-full{flex-basis:100%;width:100%}
+  @media (max-width:560px){ .pane{width:100%} }
+  .topbar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .pill{background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;display:flex;flex-direction:column;line-height:1.1;text-align:center}
+  .pill .k{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+  .pill .v{font-family:"Fredoka",var(--rounded);font-weight:600;font-size:20px}
+  .pill .v.tempo{color:var(--amber)} .pill .v.score{color:var(--mint)}
+
+  .mascot{font-size:46px;text-align:center;margin:8px 0 -4px;height:54px;transition:transform .15s}
+  .mascot.pop{animation:pop .45s ease}
+  .mascot.shake{animation:shake .4s ease}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-7deg)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-4deg)}40%{transform:translateX(8px) rotate(4deg)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+  .stage{position:relative;width:min(76vw,340px);aspect-ratio:1;margin:2px auto 4px}
+  .glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;pointer-events:none}
+  .glow.correct{animation:glowG .85s ease}
+  .glow.wrong{animation:glowR .85s ease}
+  @keyframes glowG{0%{opacity:0;box-shadow:0 0 0 0 rgba(70,224,168,0)}30%{opacity:1;box-shadow:0 0 70px 22px rgba(70,224,168,.5)}100%{opacity:0}}
+  @keyframes glowR{0%{opacity:0;box-shadow:0 0 0 0 rgba(239,83,80,0)}30%{opacity:1;box-shadow:0 0 70px 22px rgba(239,83,80,.5)}100%{opacity:0}}
+  .stage svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring-track{fill:none;stroke:var(--line);stroke-width:9}
+  .ring-prog{fill:none;stroke:var(--mint);stroke-width:12;stroke-linecap:round;transition:stroke .25s linear}
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  #question{font-family:"Fredoka",var(--rounded);font-weight:700;font-size:clamp(38px,12vw,72px);line-height:1;letter-spacing:1px}
+  #question .x{color:var(--violet)}
+  #answer{font-family:"Fredoka",var(--rounded);font-weight:700;font-size:clamp(30px,9vw,56px);line-height:1.05;min-height:1.05em;margin-top:6px;opacity:0;transform:scale(.85);transition:opacity .18s ease, transform .18s ease}
+  #answer.show{opacity:1;transform:scale(1)}
+  #answer.good{color:var(--mint)} #answer.bad{color:#ff8f7a}
+  #answer.stamp{animation:stamp .42s cubic-bezier(.2,1.3,.4,1)}
+  @keyframes stamp{0%{transform:scale(2);opacity:0}50%{transform:scale(.88);opacity:1}100%{transform:scale(1)}}
+  .ear{font-size:clamp(46px,13vw,78px)}
+
+  .confetti{position:absolute;top:16%;width:10px;height:14px;border-radius:2px;opacity:.95;animation:fall .95s ease-in forwards}
+  @keyframes fall{to{transform:translateY(180px) rotate(420deg);opacity:0}}
+
+  .mic{text-align:center;margin:2px 0 6px}
+  .dictated{font-family:"Fredoka",var(--rounded);font-weight:700;font-size:clamp(46px,16vw,118px);line-height:.95;color:var(--ink);min-height:.95em;transition:color .15s ease}
+  .dictated.pop{animation:dpop .18s ease}
+  @keyframes dpop{0%{transform:scale(.7);opacity:.35}100%{transform:scale(1);opacity:1}}
+  .dictated.good{color:var(--mint)} .dictated.bad{color:#ff8f7a}
+  .micStatus{font-weight:800;font-size:16px;min-height:22px;color:var(--muted);margin-top:2px}
+  .micStatus .listen{color:var(--mint)} .micStatus .ok{color:var(--mint)} .micStatus .ko{color:#ff8f7a}
+
+  .review{margin-top:6px}
+  .review h3{font-family:"Fredoka",var(--rounded);font-size:18px;margin:14px 0 6px;text-align:center}
+  .review .sub{color:var(--muted);font-size:13px;text-align:center;margin:0 0 12px;font-weight:700}
+  .facts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .fact{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;min-width:92px}
+  .fact .q{font-family:"Fredoka",var(--rounded);font-weight:700;font-size:22px}
+  .fact .eq{color:var(--mint);font-weight:800;font-size:14px}
+  .fact .cnt{margin-top:5px;font-size:11px;font-weight:800;color:#ff9f8e;background:rgba(239,83,80,.16);border-radius:999px;padding:2px 9px}
+
+  .dots{display:flex;gap:10px;justify-content:center;margin:2px 0 18px}
+  .dot{width:13px;height:13px;border-radius:50%;background:#3b366f;transition:.2s}
+  .dot.done-ok{background:var(--mint)} .dot.done-ko{background:#ef5350}
+  .dot.active{background:var(--amber);box-shadow:0 0 0 5px rgba(255,194,75,.18)}
+
+  .controls{display:flex;gap:12px;justify-content:center}
+  .controls .btn{min-width:150px}
+
+  .arena{margin:4px auto 18px;display:flex;justify-content:center}
+  .vs{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .end{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px}
+  .end b{font-family:"Fredoka",var(--rounded);font-size:22px}
+  .end.ko{color:#ff8f7a} .end.ok{color:var(--mint)}
+  .col{position:relative;width:58px;height:200px;background:#2b2658;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:inset 0 0 22px rgba(0,0,0,.35)}
+  .col .fill{position:absolute;left:0;right:0;height:0;transition:height .45s cubic-bezier(.2,.8,.2,1)}
+  .col .fill.ko{top:0;background:linear-gradient(180deg,#ef5350,#ff8f7a)}
+  .col .fill.ok{bottom:0;background:linear-gradient(0deg,#2fc98a,var(--mint))}
+  .col .mid{position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(255,255,255,.16)}
+
+  .done-screen{display:none;text-align:center}
+  .done-screen .logo{font-size:52px}
+  .done-screen h2{font-family:"Fredoka",var(--rounded);font-size:30px;margin:6px 0}
+  .done-screen p{color:var(--muted);margin:0 0 6px;font-weight:700}
+  .done-screen .score-big{font-family:"Fredoka",var(--rounded);font-size:40px;color:var(--mint);margin:6px 0 16px}
+
+  @media (prefers-reduced-motion: reduce){
+    .ring-prog,#answer,.fill{transition:none}
+    .mascot.pop,.mascot.shake,.glow.correct,.glow.wrong,.dictated.pop,#answer.stamp{animation:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- RÉGLAGES -->
+  <section id="setup">
+    <div class="brand"><span class="logo">🐮</span><h1>Rechenrhythmus</h1></div>
+    <p class="tagline">Les multiplications sont dites <b>en allemand</b> (« <i>fünf mal drei</i> »). L'enfant répond <b>à voix haute</b> dans le micro. Bon = vert, faux = rouge, puis question suivante. Chaque série va un peu plus vite.</p>
+
+    <div class="card">
+      <div class="grid">
+        <div class="field"><label for="startInt">Temps pour répondre (s)</label><input id="startInt" type="number" value="8" min="2" max="30" step="0.5"></div>
+        <div class="field"><label for="decr">Accélération par série (s)</label><input id="decr" type="number" value="0.5" min="0" max="5" step="0.5"></div>
+        <div class="field"><label for="minInt">Temps minimum (s)</label><input id="minInt" type="number" value="3" min="1" max="20" step="0.5"></div>
+        <div class="field"><label for="perSeries">Questions par série</label><input id="perSeries" type="number" value="5" min="1" max="20" step="1"></div>
+        <div class="field"><label for="dmin">Chiffre minimum (1–9)</label><input id="dmin" type="number" value="2" min="1" max="9" step="1"></div>
+        <div class="field"><label for="dmax">Chiffre maximum (1–9)</label><input id="dmax" type="number" value="9" min="1" max="9" step="1"></div>
+        <div class="field"><label for="nSeries">Nombre de séries</label><input id="nSeries" type="number" value="0" min="0" max="99" step="1"><span class="hint">0 = illimité (jusqu'à « Arrêter »)</span></div>
+        <div class="field"><label for="rate">Vitesse de la voix</label><div class="range-row"><input id="rate" type="range" min="0.5" max="1.2" step="0.05" value="0.85"><span class="val" id="rateVal">0.85×</span></div></div>
+        <div class="field"><div class="toggle" id="micToggleWrap"><span>Répondre au micro 🎤</span><label class="switch"><input id="micToggle" type="checkbox" checked><i class="slot"></i><i class="knob"></i></label></div></div>
+        <div class="field"><div class="toggle"><span>Montrer les chiffres</span><label class="switch"><input id="showDigits" type="checkbox" checked><i class="slot"></i><i class="knob"></i></label></div></div>
+        <div class="field"><div class="toggle"><span>Énoncer la bonne réponse</span><label class="switch"><input id="sayAns" type="checkbox" checked><i class="slot"></i><i class="knob"></i></label></div></div>
+        <div class="field"><div class="toggle"><span>Sons</span><label class="switch"><input id="sound" type="checkbox" checked><i class="slot"></i><i class="knob"></i></label></div></div>
+        <div class="field"><div class="toggle"><span>Tic-tac ⏱️</span><label class="switch"><input id="tick" type="checkbox" checked><i class="slot"></i><i class="knob"></i></label></div></div>
+      </div>
+
+      <div class="voicebar">
+        <div class="field"><label for="voice">Voix allemande</label><select id="voice"></select></div>
+        <button class="btn ghost" id="testVoice" type="button">Tester</button>
+      </div>
+      <div class="warn" id="warn"></div>
+      <div class="note" id="micNote"></div>
+      <button class="btn ghost" id="clearHist" type="button" style="margin-top:12px;font-size:13px;padding:8px 14px">Effacer l'historique des stats</button>
+
+      <button class="btn primary big" id="start" type="button">Démarrer ▶</button>
+    </div>
+  </section>
+
+  <!-- JEU -->
+  <section id="play" class="play">
+    <div class="pane">
+    <div class="topbar">
+      <div class="pill"><span class="k">Série</span><span class="v" id="serieNum">1</span></div>
+      <div class="pill"><span class="k">Tempo</span><span class="v tempo" id="tempoNum">8.0 s</span></div>
+      <div class="pill" id="scorePill"><span class="k">Score</span><span class="v score" id="scoreNum">0 / 0</span></div>
+    </div>
+
+    <div class="mascot" id="mascot">🐮</div>
+
+    <div class="stage" id="stage">
+      <div class="glow" id="glow"></div>
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="ring-track" cx="100" cy="100" r="88"></circle>
+        <circle class="ring-prog" id="ring" cx="100" cy="100" r="88"></circle>
+      </svg>
+      <div class="center" aria-live="polite">
+        <div id="question">– × –</div>
+        <div id="answer"></div>
+      </div>
+    </div>
+
+    <div class="mic">
+      <div class="dictated" id="dictated"></div>
+      <div class="micStatus" id="micStatus"></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="pane">
+    <div class="arena" id="gauges">
+      <div class="vs">
+        <div class="end ko"><span>🤖 Ordi</span><b id="gKo">0</b></div>
+        <div class="col">
+          <div class="fill ko" id="fillKo"></div>
+          <div class="fill ok" id="fillOk"></div>
+          <div class="mid"></div>
+        </div>
+        <div class="end ok"><span>🧒 Toi</span><b id="gOk">0</b></div>
+      </div>
+    </div>
+    </div>
+
+    <div class="controls pane-full">
+      <button class="btn ghost" id="pause" type="button">Pause ⏸</button>
+      <button class="btn danger" id="stop" type="button">Arrêter ◼</button>
+    </div>
+  </section>
+
+  <!-- FIN -->
+  <section id="done" class="done-screen">
+    <div class="card">
+      <div class="logo" id="doneEmoji">🎉</div>
+      <h2>Fertig!</h2>
+      <div class="score-big" id="doneScore"></div>
+      <p id="doneText"></p>
+      <div class="review" id="review"></div>
+      <button class="btn primary" id="again" type="button" style="margin-top:16px">Recommencer</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ===== nombres allemands (0–100) ===== */
+  const ONES=['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun'];
+  const TEENS=['zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn'];
+  const TENS=['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
+  function germanNumber(n){
+    n=Math.round(n);
+    if(n<10) return ONES[n];
+    if(n<20) return TEENS[n-10];
+    if(n<100){const t=Math.floor(n/10),o=n%10;return o===0?TENS[t]:((o===1?'ein':ONES[o])+'und'+TENS[t]);}
+    if(n===100) return 'hundert';
+    return String(n);
+  }
+
+  /* ===== reconnaissance des nombres dits en allemand ===== */
+  const W={'null':0,'eins':1,'ein':1,'eine':1,'einen':1,'zwei':2,'zwo':2,'drei':3,'vier':4,'fünf':5,'fuenf':5,'sechs':6,'sieben':7,'acht':8,'neun':9,'zehn':10,'elf':11,'zwölf':12,'zwoelf':12,'dreizehn':13,'vierzehn':14,'fünfzehn':15,'fuenfzehn':15,'sechzehn':16,'siebzehn':17,'achtzehn':18,'neunzehn':19,'zwanzig':20,'dreißig':30,'dreissig':30,'vierzig':40,'fünfzig':50,'fuenfzig':50,'sechzig':60,'siebzig':70,'achtzig':80,'neunzig':90};
+  const U={'eins':1,'ein':1,'zwei':2,'zwo':2,'drei':3,'vier':4,'fünf':5,'fuenf':5,'sechs':6,'sieben':7,'acht':8,'neun':9};
+  const T={'zwanzig':20,'dreißig':30,'dreissig':30,'vierzig':40,'fünfzig':50,'fuenfzig':50,'sechzig':60,'siebzig':70,'achtzig':80,'neunzig':90};
+  function compound(s){const m=s.match(/^(eins|ein|zwei|zwo|drei|vier|fünf|fuenf|sechs|sieben|acht|neun)und(zwanzig|dreißig|dreissig|vierzig|fünfzig|fuenfzig|sechzig|siebzig|achtzig|neunzig)$/);return m?U[m[1]]+T[m[2]]:null;}
+  function parseGermanNumber(text){
+    if(!text) return null;
+    text=text.toLowerCase();
+    const dm=text.match(/\d{1,3}/); if(dm) return parseInt(dm[0],10);
+    const clean=text.replace(/[^a-zäöüß]/g,'');
+    if(Object.prototype.hasOwnProperty.call(W,clean)) return W[clean];
+    const c=compound(clean); if(c!==null) return c;
+    const tokens=text.match(/[a-zäöüß]+/g)||[]; let last=null;
+    for(const t of tokens){
+      if(Object.prototype.hasOwnProperty.call(W,t)){last=W[t];continue;}
+      const cc=compound(t); if(cc!==null) last=cc;
+    }
+    return last;
+  }
+
+  /* ===== état ===== */
+  let running=false, paused=false, rafId=null;
+  let voices=[], selectedVoice=null;
+  let currentRec=null, micEnabled=false, soundOn=true, tickOn=true;
+  let score=0, total=0, stats={};
+  let tickTimer=null, tickFlip=false;
+  let graceTimer=null;
+  let priorityQueue=[], arenaMax=0;
+  const LS_KEY='rechenrhythmus_v1';
+
+  /* ===== persistance (localStorage) ===== */
+  function saveStats(){
+    try{
+      const out={};
+      for(const k in stats){ const s=stats[k]; if(s.errors>0 || s.asked>0) out[k]={a:s.a,b:s.b,errors:+s.errors.toFixed(2),asked:s.asked}; }
+      localStorage.setItem(LS_KEY, JSON.stringify(out));
+    }catch(e){}
+  }
+  function loadStats(){
+    stats={};
+    try{
+      const raw=localStorage.getItem(LS_KEY);
+      if(raw){ const o=JSON.parse(raw); for(const k in o){ const s=o[k]; stats[k]={a:s.a,b:s.b,errors:s.errors||0,asked:s.asked||0,sMiss:0,sAsked:0,review:0}; } }
+    }catch(e){}
+  }
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SR_OK = !!SR;
+
+  /* ===== synthèse vocale ===== */
+  const synth=window.speechSynthesis;
+  function loadVoices(){
+    voices=(synth?synth.getVoices():[])||[];
+    const de=voices.filter(v=>/^de/i.test(v.lang));
+    const sel=$('voice'); sel.innerHTML=''; const warn=$('warn');
+    if(de.length===0){
+      const o=document.createElement('option');o.textContent='Aucune voix allemande détectée';o.value='';sel.appendChild(o);
+      warn.style.display='block';
+      warn.textContent="Aucune voix allemande installée : la prononciation risque d'être incorrecte. Sur Ubuntu : « apt install espeak-ng speech-dispatcher », ou utiliser Chrome/Chromium.";
+      selectedVoice=null;
+    } else {
+      warn.style.display='none';
+      de.forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' — '+v.lang;sel.appendChild(o);});
+      const pref=de.find(v=>/de-DE/i.test(v.lang))||de[0]; sel.value=pref.name; selectedVoice=pref;
+    }
+  }
+  if(synth){ loadVoices(); synth.onvoiceschanged=loadVoices; }
+  else { $('warn').style.display='block'; $('warn').textContent="Ce navigateur ne gère pas la synthèse vocale."; }
+  $('voice').addEventListener('change',e=>{selectedVoice=voices.find(v=>v.name===e.target.value)||null;});
+
+  function speak(text){
+    return new Promise(resolve=>{
+      if(!synth){resolve();return;}
+      try{synth.resume();}catch(e){}
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang=(selectedVoice&&selectedVoice.lang)||'de-DE';
+      if(selectedVoice) u.voice=selectedVoice;
+      u.rate=parseFloat($('rate').value);
+      let done=false; const finish=()=>{if(!done){done=true;resolve();}};
+      const guard=setTimeout(finish,Math.max(1500,text.length*150));
+      u.onend=()=>{clearTimeout(guard);finish();};
+      u.onerror=()=>{clearTimeout(guard);finish();};
+      synth.speak(u);
+    });
+  }
+
+  /* ===== sons (Web Audio) ===== */
+  let actx=null;
+  function ac(){ if(!actx){ const C=window.AudioContext||window.webkitAudioContext; actx=new C(); } return actx; }
+  function tone(freq,start,dur,type,gain){
+    if(!soundOn) return;
+    const a=ac(); const o=a.createOscillator(), g=a.createGain();
+    o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(a.destination);
+    const t0=a.currentTime+start;
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(gain||0.22,t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.start(t0); o.stop(t0+dur+0.03);
+  }
+  const sndOk    =()=>{tone(660,0,0.13,'sine',0.25); tone(990,0.10,0.20,'sine',0.25);};
+  const sndKo    =()=>{tone(311,0,0.18,'square',0.16); tone(220,0.15,0.28,'square',0.16);};
+  const sndLevel =()=>{tone(523,0,0.12,'triangle',0.2); tone(659,0.11,0.12,'triangle',0.2); tone(784,0.22,0.22,'triangle',0.22);};
+  const sndTic   =()=>tone(1500,0,0.035,'square',0.09);
+  const sndTac   =()=>tone(1050,0,0.045,'square',0.09);
+  function startTick(){
+    stopTick(); tickFlip=false;
+    if(!soundOn || !tickOn) return;
+    tickTimer=setInterval(()=>{
+      if(paused || !running) return;
+      tickFlip=!tickFlip;
+      tickFlip ? sndTic() : sndTac();
+    },500);
+  }
+  function stopTick(){ if(tickTimer){ clearInterval(tickTimer); tickTimer=null; } }
+
+  /* ===== anneau / décompte ===== */
+  const ring=$('ring'), RADIUS=88, CIRC=2*Math.PI*RADIUS;
+  ring.style.strokeDasharray=CIRC;
+  function updateRing(remaining,total){
+    const frac=total>0?remaining/total:0;
+    ring.style.strokeDashoffset=CIRC*(1-frac);
+    ring.style.stroke= frac>0.5?'var(--mint)':(frac>0.2?'var(--amber)':'var(--coral)');
+  }
+  function wait(ms,onTick){
+    return new Promise((resolve,reject)=>{
+      let remaining=ms,last=performance.now();
+      const frame=now=>{
+        if(!running){reject(new Error('stop'));return;}
+        const dt=now-last; last=now;
+        if(!paused) remaining-=dt;
+        if(onTick) onTick(Math.max(0,remaining),ms);
+        if(remaining<=0){resolve();return;}
+        rafId=requestAnimationFrame(frame);
+      };
+      rafId=requestAnimationFrame(frame);
+    });
+  }
+
+  /* ===== micro ===== */
+  function listen(durationMs, expected){
+    return new Promise(resolve=>{
+      let settled=false, lastNum=null;
+      const GRACE=600; // ms : laisse finir le traitement de la reconnaissance vocale
+      const done=v=>{ if(settled) return; settled=true; stopTick(); clearTimeout(graceTimer); graceTimer=null; if(rafId) cancelAnimationFrame(rafId); try{currentRec&&currentRec.stop();}catch(e){} currentRec=null; resolve(v); };
+      startTick();
+      if(micEnabled && SR_OK){
+        const rec=new SR(); currentRec=rec;
+        rec.lang='de-DE'; rec.interimResults=true; rec.maxAlternatives=4; rec.continuous=true;
+        $('micStatus').innerHTML='<span class="listen">🎤 J\'écoute…</span>';
+        rec.onresult=e=>{
+          for(const r of e.results){
+            for(let i=0;i<r.length;i++){
+              const n=parseGermanNumber(r[i].transcript);
+              if(n!==null){
+                lastNum=n; setDictated(n);
+                if(n===expected){ done({answer:n,timedOut:false}); return; }  // bonne réponse → validée tout de suite (sans attendre le timer)
+                if(r.isFinal){ done({answer:n,timedOut:false}); return; }      // réponse finale (même fausse)
+              }
+            }
+          }
+        };
+        rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ micEnabled=false; $('micStatus').innerHTML='<span class="ko">Micro refusé — mode écoute</span>'; } };
+        rec.onend=()=>{ if(!settled && running && micEnabled){ try{rec.start();}catch(e){} } };
+        try{ rec.start(); }catch(e){}
+      } else {
+        $('micStatus').textContent='';
+      }
+      wait(durationMs,updateRing)
+        .then(()=>{
+          // timer terminé : on coupe le tic-tac mais on écoute encore GRACE ms
+          stopTick();
+          if(micEnabled && SR_OK && !settled) $('micStatus').innerHTML='<span class="listen">⏳ …</span>';
+          graceTimer=setTimeout(()=>done({answer:lastNum,timedOut:lastNum===null}), GRACE);
+        })
+        .catch(()=>done({answer:null,stopped:true}));
+    });
+  }
+
+  /* ===== feedback visuel ===== */
+  function setMascot(state){
+    const m=$('mascot');
+    m.classList.remove('pop','shake');
+    void m.offsetWidth;
+    if(state==='happy'){ m.textContent='🐄'; m.classList.add('pop'); }
+    else if(state==='sad'){ m.textContent='😟'; m.classList.add('shake'); }
+    else { m.textContent='🐮'; }
+  }
+  function flash(kind){ const g=$('glow'); g.className='glow'; void g.offsetWidth; g.classList.add(kind); }
+  function setDictated(txt){ const d=$('dictated'); d.textContent=txt; d.classList.remove('pop'); void d.offsetWidth; d.classList.add('pop'); }
+  function confetti(){
+    if(reduceMotion) return;
+    const stage=$('stage'); const cols=['#FFC24B','#FF7A5C','#46E0A8','#9b8cff','#ffffff'];
+    for(let i=0;i<14;i++){
+      const p=document.createElement('span'); p.className='confetti';
+      p.style.left=(14+Math.random()*72)+'%';
+      p.style.background=cols[i%cols.length];
+      p.style.animationDelay=(Math.random()*0.15)+'s';
+      stage.appendChild(p);
+      setTimeout(()=>p.remove(),1150);
+    }
+  }
+
+  /* ===== dots ===== */
+  function buildDots(n){ const w=$('dots'); w.innerHTML=''; for(let i=0;i<n;i++){const d=document.createElement('div');d.className='dot';w.appendChild(d);} }
+  function markDot(i,state){ const d=$('dots').children[i]; if(d) d.className='dot '+state; }
+  function activeDot(i){ const d=$('dots').children[i]; if(d) d.className='dot active'; }
+
+  function setScore(){ $('scoreNum').textContent=score+' / '+total; }
+  function updateGauges(){
+    const ko=total-score;
+    let okPct, koPct;
+    if(arenaMax>0){ okPct=Math.min(100,100*score/arenaMax); koPct=Math.min(100,100*ko/arenaMax); }
+    else { const d=Math.max(1,total); okPct=100*score/d; koPct=100*ko/d; }
+    $('fillOk').style.height=okPct+'%';
+    $('fillKo').style.height=koPct+'%';
+    $('gOk').textContent=score; $('gKo').textContent=ko;
+  }
+
+  /* ===== une question ===== */
+  async function askQuestion(a,b,interval,cfg){
+    const res=a*b;
+    $('answer').className=''; $('answer').textContent='';
+    $('dictated').textContent=''; $('dictated').className='dictated'; $('micStatus').textContent='';
+    setMascot('idle');
+    $('question').innerHTML = cfg.showDigits ? (a+' <span class="x">×</span> '+b) : '<span class="ear">🔊</span>';
+
+    await speak(germanNumber(a)+' mal '+germanNumber(b));
+    if(!running) return {stopped:true};
+
+    updateRing(interval*1000,interval*1000);
+    const r=await listen(interval*1000, res);   // res = réponse attendue → validée dès qu'elle est dite
+    if(r.stopped||!running) return {stopped:true};
+
+    const evaluated = micEnabled; // en mode écoute pure, pas de score
+    let ok=false;
+    if(evaluated){
+      ok=(r.answer===res);
+      total++; recordResult(a,b,ok);
+      $('question').innerHTML = a+' <span class="x">×</span> '+b;   // on révèle toujours l'opération pour l'imprimer
+      if(r.answer!=null) setDictated(r.answer); else $('dictated').textContent='—';
+      if(ok){ score++; updateRing(1,1); flash('correct'); setMascot('happy'); confetti(); sndOk();
+        $('dictated').className='dictated good';
+        $('answer').textContent='= '+res+'  ✓'; $('answer').className='show good stamp';
+        $('micStatus').innerHTML='<span class="ok">Richtig! 🎉</span>';
+      } else { flash('wrong'); setMascot('sad'); sndKo();
+        $('dictated').className='dictated bad';
+        $('answer').textContent='= '+res; $('answer').className='show bad';
+        $('micStatus').innerHTML='<span class="ko">'+(r.timedOut?'Zu spät':'Falsch')+' — die Antwort ist '+res+'</span>';
+      }
+      setScore(); updateGauges();
+    } else {
+      // mode écoute : on révèle simplement
+      $('answer').textContent='= '+res; $('answer').className='show good';
+    }
+
+    if(cfg.sayAns) await speak(germanNumber(res));
+    try{ await wait(ok?900:1500,()=>{}); }catch(e){ return {stopped:true}; }
+    return {ok,evaluated,stopped:false};
+  }
+
+  /* ===== boucle ===== */
+  async function run(cfg){
+    let interval=cfg.startInt, serie=0;
+    try{
+      while(running && (cfg.nSeries===0 || serie<cfg.nSeries)){
+        serie++;
+        $('serieNum').textContent=serie;
+        const atMin = interval<=cfg.minInt+1e-9;
+        $('tempoNum').textContent=interval.toFixed(1)+' s'+(atMin?' 🔥':'');
+        buildDots(cfg.perSeries);
+        if(serie>1) sndLevel();             // son à chaque nouveau palier
+        for(let q=0;q<cfg.perSeries && running;q++){
+          activeDot(q);
+          const [a,b]=nextPair(cfg);
+          const r=await askQuestion(a,b,interval,cfg);
+          if(r.stopped||!running) throw new Error('stop');
+          markDot(q, r.evaluated ? (r.ok?'done-ok':'done-ko') : 'done-ok');
+        }
+        if(atMin) break;                    // palier minimum joué → fin du jeu
+        interval=Math.max(cfg.minInt, interval-cfg.decr);
+      }
+      finishSession(serie,true);
+    }catch(e){ /* arrêt manuel */ }
+  }
+  function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  /* ===== stats d'erreurs + réinjection ===== */
+  function factKey(a,b){ return Math.min(a,b)+'x'+Math.max(a,b); }
+  function ensure(a,b){ const k=factKey(a,b); if(!stats[k]) stats[k]={a:Math.min(a,b),b:Math.max(a,b),errors:0,asked:0,sMiss:0,sAsked:0,review:0}; return stats[k]; }
+  function recordResult(a,b,ok){
+    const s=ensure(a,b); s.asked++; s.sAsked++;
+    if(ok){ s.review=Math.max(0,s.review-1); s.errors=Math.max(0,s.errors-0.34); }   // une réussite efface peu à peu la faiblesse
+    else  { s.review+=2; s.errors+=1; s.sMiss++; }                                    // une faute accentue la faiblesse
+    saveStats();
+  }
+  // début de session : reset des compteurs, on amorce la file des multiplications les moins sûres
+  function initSession(cfg){
+    const facts=[];
+    for(const k in stats){
+      const s=stats[k]; s.sMiss=0; s.sAsked=0; s.review=Math.min(4, Math.round(s.errors));
+      if(s.errors>=0.5 && s.a>=cfg.dmin && s.b<=cfg.dmax && s.a*s.b!==8) facts.push(s);
+    }
+    facts.sort((x,y)=> (y.errors-x.errors) || ((y.errors/Math.max(1,y.asked))-(x.errors/Math.max(1,x.asked))) );
+    priorityQueue = facts.slice(0, Math.min(facts.length, Math.max(cfg.perSeries,8)));
+    const pt=plannedTotals(cfg);
+    arenaMax = pt.bounded ? pt.totalQ : 0;
+  }
+  // nombre de questions prévues (pour l'échelle des jauges) + détection d'un jeu sans fin
+  function plannedTotals(cfg){
+    let interval=cfg.startInt, n=0, bounded=true;
+    if(cfg.nSeries>0){ n=cfg.nSeries; }
+    else {
+      while(true){ n++; if(interval<=cfg.minInt+1e-9) break; const nx=Math.max(cfg.minInt, interval-cfg.decr); if(nx>=interval){ bounded=false; break; } interval=nx; if(n>999){ bounded=false; break; } }
+    }
+    return {series:n, bounded, totalQ:n*cfg.perSeries};
+  }
+  function order(s){ return Math.random()<0.5 ? [s.a,s.b] : [s.b,s.a]; }
+  function inRange(s,cfg){ return s.a>=cfg.dmin && s.b<=cfg.dmax; }
+  function badResult(a,b){ return a*b===8; }   // "acht" seul mal reconnu → on évite les produits = 8
+  function nextPair(cfg){
+    // 1) d'abord les plus faibles connues (reprises d'une session à l'autre)
+    if(priorityQueue.length){ return order(priorityQueue.shift()); }
+    // 2) ~40% : repose une multiplication ratée cette session (pondérée)
+    const pool=Object.values(stats).filter(s=>s.review>0 && inRange(s,cfg) && !badResult(s.a,s.b));
+    if(pool.length && Math.random()<0.4){
+      const totalW=pool.reduce((acc,s)=>acc+s.review,0);
+      let r=Math.random()*totalW, pick=pool[pool.length-1];
+      for(const s of pool){ r-=s.review; if(r<=0){ pick=s; break; } }
+      return order(pick);
+    }
+    // 3) sinon aléatoire dans la plage (jamais un produit = 8)
+    let a,b,guard=0;
+    do{ a=rand(cfg.dmin,cfg.dmax); b=rand(cfg.dmin,cfg.dmax); }while(badResult(a,b) && ++guard<50);
+    return [a,b];
+  }
+
+  /* ===== écrans ===== */
+  function finishSession(series,natural){
+    running=false; stopTick(); clearTimeout(graceTimer); graceTimer=null; try{synth&&synth.cancel();}catch(e){}
+    try{currentRec&&currentRec.abort();}catch(e){} currentRec=null;
+    if(rafId) cancelAnimationFrame(rafId);
+    saveStats();
+    $('setup').style.display='none'; $('play').style.display='none'; $('done').style.display='block';
+    const reviewEl=$('review'); reviewEl.innerHTML='';
+    if(micEnabled && total>0){
+      const pct=Math.round(100*score/total);
+      $('doneScore').textContent=score+' / '+total;
+      $('doneEmoji').textContent = pct>=80?'🏆':(pct>=50?'👍':'🐮');
+      $('doneText').textContent = (natural?'Séance terminée — ':'Arrêté — ')+series+' série'+(series>1?'s':'')+'. '+(pct>=80?'Super gemacht!':(pct>=50?'Gut gemacht!':'Weiter üben!'));
+      const missed=Object.values(stats).filter(s=>s.sMiss>0).sort((x,y)=>y.sMiss-x.sMiss);
+      if(missed.length===0){
+        reviewEl.innerHTML='<h3>Keine Fehler — bravo! 🌟</h3><div class="sub">Aucune erreur sur cette séance.</div>';
+      } else {
+        const tally={};
+        missed.forEach(s=>{ tally[s.a]=(tally[s.a]||0)+s.sMiss; tally[s.b]=(tally[s.b]||0)+s.sMiss; });
+        const topTables=Object.keys(tally).map(Number).sort((x,y)=>tally[y]-tally[x]).slice(0,3);
+        let html='<h3>À réviser en priorité</h3>';
+        html+='<div class="sub">Tables à revoir : '+topTables.join('  ·  ')+'</div><div class="facts">';
+        missed.slice(0,8).forEach(s=>{
+          html+='<div class="fact"><div class="q">'+s.a+' × '+s.b+'</div><div class="eq">= '+(s.a*s.b)+'</div><div class="cnt">'+s.sMiss+' faute'+(s.sMiss>1?'s':'')+'</div></div>';
+        });
+        html+='</div><div class="sub" style="margin-top:12px">Ces multiplications reviendront en premier la prochaine fois.</div>';
+        reviewEl.innerHTML=html;
+      }
+    } else {
+      $('doneScore').textContent=''; $('doneEmoji').textContent='🐮';
+      $('doneText').textContent=(natural?'Séance terminée — ':'Arrêté — ')+series+' série'+(series>1?'s':'')+'.';
+    }
+  }
+
+  /* ===== config ===== */
+  function num(v,d){const n=parseFloat(v);return isFinite(n)?n:d;}
+  function clampInt(v,min,max,d){let n=parseInt(v,10);if(!isFinite(n))n=d;return Math.min(max,Math.max(min,n));}
+  function readConfig(){
+    let dmin=clampInt($('dmin').value,1,9,2), dmax=clampInt($('dmax').value,1,9,9);
+    if(dmin>dmax){const t=dmin;dmin=dmax;dmax=t;$('dmin').value=dmin;$('dmax').value=dmax;}
+    return {
+      startInt:num($('startInt').value,8), decr:num($('decr').value,0.5), minInt:num($('minInt').value,3),
+      perSeries:clampInt($('perSeries').value,1,50,5), dmin, dmax, nSeries:clampInt($('nSeries').value,0,99,0),
+      showDigits:$('showDigits').checked, sayAns:$('sayAns').checked
+    };
+  }
+
+  /* ===== support micro ===== */
+  function refreshMicNote(){
+    const note=$('micNote'), wrap=$('micToggleWrap'), tog=$('micToggle');
+    if(!SR_OK){
+      tog.checked=false; tog.disabled=true; wrap.classList.add('disabled');
+      note.textContent="Reconnaissance vocale non disponible dans ce navigateur (utiliser Chrome/Chromium). Le jeu passera en mode écoute simple.";
+    } else {
+      note.textContent="Micro : autoriser l'accès quand le navigateur le demande. En local, ouvrir la page via http://localhost (ex. « python3 -m http.server ») — le micro est souvent bloqué en file://.";
+    }
+  }
+  refreshMicNote();
+
+  /* ===== contrôles ===== */
+  $('rate').addEventListener('input',e=>$('rateVal').textContent=parseFloat(e.target.value).toFixed(2)+'×');
+  $('testVoice').addEventListener('click',()=>speak('eins mal eins ist eins. fünf mal drei ist fünfzehn.'));
+  $('clearHist').addEventListener('click',()=>{
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+    stats={}; priorityQueue=[];
+    const n=$('clearHist'); const t=n.textContent; n.textContent='Historique effacé ✓';
+    setTimeout(()=>{ n.textContent=t; }, 1600);
+  });
+
+  $('start').addEventListener('click',()=>{
+    const cfg=readConfig();
+    micEnabled = SR_OK && $('micToggle').checked;
+    soundOn = $('sound').checked;
+    tickOn = $('tick').checked;
+    $('scorePill').style.display = micEnabled ? '' : 'none';
+    $('gauges').style.display = micEnabled ? '' : 'none';
+    loadStats(); initSession(cfg);
+    score=0; total=0; setScore(); updateGauges();
+    running=true; paused=false; $('pause').textContent='Pause ⏸';
+    $('setup').style.display='none'; $('done').style.display='none'; $('play').style.display='flex';
+    try{ synth&&synth.resume(); }catch(e){}
+    try{ ac().resume(); }catch(e){}
+    run(cfg);
+  });
+
+  $('pause').addEventListener('click',()=>{
+    paused=!paused; $('pause').textContent=paused?'Reprendre ▶':'Pause ⏸';
+    try{ paused?synth.pause():synth.resume(); }catch(e){}
+    if(paused){ try{currentRec&&currentRec.stop();}catch(e){} }
+  });
+
+  $('stop').addEventListener('click',()=>{
+    const cur=parseInt($('serieNum').textContent,10)||0;
+    finishSession(cur,false);
+  });
+
+  $('again').addEventListener('click',()=>{
+    $('done').style.display='none'; $('play').style.display='none'; $('setup').style.display='block';
+  });
+})();
+</script>
+</body>
+</html>
